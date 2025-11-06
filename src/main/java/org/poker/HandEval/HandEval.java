@@ -1,6 +1,5 @@
 package org.poker.HandEval;
 
-import org.poker.CFR.History.KuhnPokerHistory;
 import org.poker.Card;
 import org.poker.CFR.History.AbstractHistory;
 import java.util.ArrayList;
