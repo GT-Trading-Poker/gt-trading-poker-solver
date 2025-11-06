@@ -14,10 +14,12 @@ public class KuhnPokerHistory extends AbstractHistory {
         hands.add(new ArrayList<>()); // Player 1
     }
 
+    @Override
     public void addCard(int player, Card card) {
         hands.get(player).add(card);
     }
 
+    @Override
     public ArrayList<Card> getHand(int player) {
         return hands.get(player);
     }

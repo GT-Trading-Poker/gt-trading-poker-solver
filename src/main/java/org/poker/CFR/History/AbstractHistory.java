@@ -1,5 +1,7 @@
 package org.poker.CFR.History;
 
+import org.poker.Card;
+
 import java.util.ArrayList;
 
 public abstract class AbstractHistory {
@@ -52,4 +54,6 @@ public abstract class AbstractHistory {
     public abstract double terminalUtility(int player);
     public abstract String infoSetKey(int player);
     public abstract AbstractHistory copy();
+    public abstract void addCard(int player, Card card);
+    public abstract ArrayList<Card> getHand(int player);
 }
