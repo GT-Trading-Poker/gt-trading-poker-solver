@@ -28,4 +28,17 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.mlflow</groupId>
+            <artifactId>mlflow-client</artifactId>
+            <version>2.15.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.9</version> <!-- Match the SLF4J version you're using -->
+        </dependency>
+    </dependencies>
+
 </project>

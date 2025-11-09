@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.poker.GameSim.GameSim;
 import org.poker.CFR.History.AbstractHistory;
+import org.poker.logging.WandBLogger;
 
 public class CFR {
     private final GameSim game;
@@ -97,12 +98,26 @@ public class CFR {
         return nodeValue;
     }
 
-    public void train(int iterations, AbstractHistory initialHistory) {
+    public void train(int iterations, AbstractHistory initialHistory, WandBLogger logger, int logFrequency) {
+        HashMap<String,Double> metrics = new HashMap<String,Double>();
+
+        double totalRegret;
+
         for (int i = 0; i < iterations; i++) {
             for (int p = 0; p < numPlayers; p++) {
                 double[] reach = new double[numPlayers];
                 for (int j = 0; j < numPlayers; j++) reach[j] = 1.0;
                 traverse(initialHistory.copy(), reach, p);
+            }
+            if (i % logFrequency == 0) {
+                // Log the regrets
+                totalRegret = 0;
+                for (InfoSet iset : infoSets.values()) {
+                    totalRegret += iset.getTotalRegret();
+                }
+                metrics.put("Cumulative Regret", totalRegret);
+
+                logger.log(metrics,i);
             }
         }
     }

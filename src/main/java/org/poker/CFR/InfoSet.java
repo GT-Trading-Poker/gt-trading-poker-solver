@@ -54,5 +54,15 @@ public class InfoSet {
         return avg;
     }
 
+    public double getTotalRegret() {
+        double total = 0;
+        for (String a : actions) {
+            if (regretSum.get(a) > 0) {
+                total += regretSum.get(a);
+            }
+        }
+        return total;
+    }
+
     public String getKey() { return key; }
 }
