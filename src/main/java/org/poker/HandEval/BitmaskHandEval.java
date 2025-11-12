@@ -17,17 +17,60 @@ public class BitmaskHandEval extends HandEval {
     }
 
     // Change returns later
+    // Idea - Assign integer value to each hand to determine strength
     public static String evaluateHand(ArrayList<Card> hand) {
         long mask = handToBitmask(hand);
         int rankMask = getRankMask(mask);
         boolean flush = hasFlush(mask);
         boolean straight = hasStraight(rankMask);
+        int[] rankCounts = getRankCounts(mask);
 
+        boolean four = containsCount(rankCounts, 4);
+        boolean three = containsCount(rankCounts, 3);
+        int pairs = countPairs(rankCounts);
+
+        if (flush && straight && isRoyal(rankMask)) return "Royal Flush";
         if (flush && straight) return "Straight Flush";
+        if (four) return "Quads";
+        if (three && pairs >= 1) return "Full House";
         if (flush) return "Flush";
         if (straight) return "Straight";
+        if (three) return "Three of a Kind";
+        if (pairs == 2) return "Two Pair";
+        if (pairs == 1) return "One Pair";
         return "High Card";
     }
+
+    // Checks if straight is specifically 10–A (royal)
+    private static boolean isRoyal(int rankMask) {
+        return (rankMask & 0b1111100000000) == 0b1111100000000; // 10, J, Q, K, A
+    }
+
+    // Counts how many of each rank exist across suits
+    private static int[] getRankCounts(long handMask) {
+        int[] counts = new int[13]; // 2–A
+        for (int suit = 0; suit < 4; suit++) {
+            long suitMask = getSuitMask(handMask, suit);
+            for (int rank = 0; rank < 13; rank++) {
+                if (((suitMask >> rank) & 1L) != 0) {
+                    counts[rank]++;
+                }
+            }
+        }
+        return counts;
+    }
+
+    private static boolean containsCount(int[] counts, int target) {
+        for (int c : counts) if (c == target) return true;
+        return false;
+    }
+
+    private static int countPairs(int[] counts) {
+        int pairs = 0;
+        for (int c : counts) if (c == 2) pairs++;
+        return pairs;
+    }
+
 
     /**
      * Converts list of cards into a bitset.
