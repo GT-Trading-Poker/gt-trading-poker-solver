@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class BitmaskHandEval extends HandEval {
     @Override
     public int compareHands(ArrayList<Card> a, ArrayList<Card> b) {
-        if (a.size() != 5 && b.size() != 5) {
+        if (a.size() != 5 || b.size() != 5) {
             throw new IllegalArgumentException("Cards must have exactly 5 cards total.");
         }
         return evaluateHand(a) - evaluateHand(b);
@@ -196,7 +196,7 @@ public class BitmaskHandEval extends HandEval {
 
     private static int getStraight(int rankMask) {
         // Ace-low straight (A,2,3,4,5)
-        if ((rankMask & 0b1000000001111) == 0b1000000001111) return 5;
+        if ((rankMask & 0b1000000001111) == 0b1000000001111) return 3; // Fix bug to make it lowest straight
 
         // Regular straights
         for (int i = 8; i >= 0; i--) {
@@ -306,5 +306,77 @@ public class BitmaskHandEval extends HandEval {
         highCard.add(new Card(10, 'D'));
         highCard.add(new Card(13, 'S'));
         test.accept("High Card", highCard);
+
+        ArrayList<Card> twoPair_AA_KK = new ArrayList<>();
+        twoPair_AA_KK.add(new Card(14, 'S'));
+        twoPair_AA_KK.add(new Card(14, 'H'));
+        twoPair_AA_KK.add(new Card(13, 'D'));
+        twoPair_AA_KK.add(new Card(13, 'C'));
+        twoPair_AA_KK.add(new Card(2, 'S'));
+        // System.out.println("Two Pair AA/KK = " + evaluateHand(twoPair_AA_KK));
+
+        ArrayList<Card> twoPair_AA_QQ = new ArrayList<>();
+        twoPair_AA_QQ.add(new Card(14, 'S'));
+        twoPair_AA_QQ.add(new Card(14, 'H'));
+        twoPair_AA_QQ.add(new Card(12, 'D'));
+        twoPair_AA_QQ.add(new Card(12, 'C'));
+        twoPair_AA_QQ.add(new Card(2, 'H'));
+        // System.out.println("Two Pair AA/QQ = " + evaluateHand(twoPair_AA_QQ));
+
+        ArrayList<Card> flush_A_high = new ArrayList<>();
+        flush_A_high.add(new Card(14, 'H'));
+        flush_A_high.add(new Card(10, 'H'));
+        flush_A_high.add(new Card(7, 'H'));
+        flush_A_high.add(new Card(5, 'H'));
+        flush_A_high.add(new Card(2, 'H'));
+        // System.out.println("A-high Flush = " + evaluateHand(flush_A_high));
+
+        ArrayList<Card> flush_A_high_small = new ArrayList<>();
+        flush_A_high_small.add(new Card(14, 'H'));
+        flush_A_high_small.add(new Card(10, 'H'));
+        flush_A_high_small.add(new Card(7, 'H'));
+        flush_A_high_small.add(new Card(4, 'H'));
+        flush_A_high_small.add(new Card(2, 'H'));
+        // System.out.println("A-high Flush Small = " + evaluateHand(flush_A_high_small));
+
+        ArrayList<Card> flush_K_high = new ArrayList<>();
+        flush_K_high.add(new Card(13, 'H'));
+        flush_K_high.add(new Card(10, 'H'));
+        flush_K_high.add(new Card(7, 'H'));
+        flush_K_high.add(new Card(5, 'H'));
+        flush_K_high.add(new Card(2, 'H'));
+        // System.out.println("K-high Flush = " + evaluateHand(flush_K_high));
+
+        ArrayList<Card> trips_5_K3 = new ArrayList<>();
+        trips_5_K3.add(new Card(5, 'S'));
+        trips_5_K3.add(new Card(5, 'H'));
+        trips_5_K3.add(new Card(5, 'D'));
+        trips_5_K3.add(new Card(13, 'C')); // K
+        trips_5_K3.add(new Card(3, 'C'));  // 3
+        // System.out.println("Trips 5 with K,3 = " + evaluateHand(trips_5_K3));
+
+        ArrayList<Card> trips_5_AQ = new ArrayList<>();
+        trips_5_AQ.add(new Card(5, 'S'));
+        trips_5_AQ.add(new Card(5, 'H'));
+        trips_5_AQ.add(new Card(5, 'D'));
+        trips_5_AQ.add(new Card(14, 'C')); // A
+        trips_5_AQ.add(new Card(12, 'C')); // Q
+        // System.out.println("Trips 5 with A,Q = " + evaluateHand(trips_5_AQ));
+
+        ArrayList<Card> wheelStraight = new ArrayList<>();
+        wheelStraight.add(new Card(14, 'D')); // Ace
+        wheelStraight.add(new Card(2, 'S'));
+        wheelStraight.add(new Card(3, 'H'));
+        wheelStraight.add(new Card(4, 'C'));
+        wheelStraight.add(new Card(5, 'S'));
+        // System.out.println("Wheel Straight = " + evaluateHand(wheelStraight));
+
+        ArrayList<Card> sixStraight = new ArrayList<>();
+        sixStraight.add(new Card(6, 'D'));
+        sixStraight.add(new Card(2, 'S'));
+        sixStraight.add(new Card(3, 'H'));
+        sixStraight.add(new Card(4, 'C'));
+        sixStraight.add(new Card(5, 'S'));
+        // System.out.println("Six-high Straight = " + evaluateHand(sixStraight));
     }
 }
