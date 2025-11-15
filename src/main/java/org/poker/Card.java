@@ -5,11 +5,11 @@ public class Card implements Comparable<Card> {
     private char suite;
 
     public Card(String rankStr, char suite) {
-        this.rank = Integer.parseInt(rankStr.substring(0,rankStr.length()));
+        this.rank = Byte.parseByte(rankStr.substring(0, rankStr.length()));
         this.suite = suite;
     }
 
-    public Card(int rank,char suite) {
+    public Card(int rank, char suite) {
         this.rank = rank;
         this.suite = suite;
     }
