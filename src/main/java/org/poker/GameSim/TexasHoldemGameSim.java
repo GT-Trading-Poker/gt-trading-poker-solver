@@ -69,10 +69,15 @@ public class TexasHoldemGameSim extends GameSim {
         Collections.shuffle(deck);
 
         // TODO: communicate with CFR team to add the addAction update to the addCard method itself
-        history.addCard(0, deck.removeLast());
-        history.addCard(0, deck.removeLast());
-        history.addCard(1, deck.removeLast());
-        history.addCard(1, deck.removeLast());
+        Card removed;
+        history.addCard(0, removed = deck.removeLast());
+        history.addAction("Deal P0: " + removed);
+        history.addCard(0, removed = deck.removeLast());
+        history.addAction("Deal P0: " + removed);
+        history.addCard(1, removed = deck.removeLast());
+        history.addAction("Deal P1: " + removed);
+        history.addCard(1, removed = deck.removeLast());
+        history.addAction("Deal P1: " + removed);
         history.setCurrentPlayer(0);
     }
 
