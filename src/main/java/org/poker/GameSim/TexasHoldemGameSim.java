@@ -2,6 +2,7 @@ package org.poker.GameSim;
 
 import org.poker.Card;
 import org.poker.CFR.History.AbstractHistory;
+import org.poker.CFR.History.KuhnPokerHistory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,19 +66,16 @@ public class TexasHoldemGameSim extends GameSim {
         // so that CFR team does not need to generate a bunch of games
         if (deck.size() < 52) resetDeck();
 
-        // deck is generated in a predictable sequence, so we must shuffle
-        Collections.shuffle(deck);
-
         // TODO: communicate with CFR team to add the addAction update to the addCard method itself
         Card removed;
         history.addCard(0, removed = deck.removeLast());
-        history.addAction("Deal P0: " + removed);
+        history.addAction("Deal P0: " + removed.getRank());
         history.addCard(0, removed = deck.removeLast());
-        history.addAction("Deal P0: " + removed);
+        history.addAction("Deal P0: " + removed.getRank());
         history.addCard(1, removed = deck.removeLast());
-        history.addAction("Deal P1: " + removed);
+        history.addAction("Deal P1: " + removed.getRank());
         history.addCard(1, removed = deck.removeLast());
-        history.addAction("Deal P1: " + removed);
+        history.addAction("Deal P1: " + removed.getRank());
         history.setCurrentPlayer(0);
     }
 
@@ -96,7 +94,7 @@ public class TexasHoldemGameSim extends GameSim {
      */
     @Override
     public double[] terminalUtility(AbstractHistory history) {
-        // TODO Auto-generated method stub
+       // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'terminalUtility'");
     }
 
@@ -115,8 +113,44 @@ public class TexasHoldemGameSim extends GameSim {
      */
     @Override
     public ArrayList<AbstractHistory> generateAllDeals(AbstractHistory history) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateAllDeals'");
+        ArrayList<AbstractHistory> deals = new ArrayList<>();
+        ArrayList<Card> cards = new ArrayList<>();
+        loadSuit('H', cards);
+        loadSuit('C', cards);
+        loadSuit('S', cards);
+        loadSuit('D', cards);
+
+        for (int i = 0; i < cards.size(); i++) {
+            for (int j = 0; j < cards.size(); j++) {
+                for (int k = 0; k < cards.size(); k++) {
+                    for (int l = 0; l < cards.size(); l++) {
+                        if (i == j) continue;
+                        if (i == k) continue;
+                        if (i == l) continue;
+                        if (j == k) continue;
+                        if (j == l) continue;
+                        if (k == l) continue;
+
+                        AbstractHistory h = new KuhnPokerHistory(); // TODO: change to proper history
+                        Card card;
+
+                        h.addCard(0, card = cards.get(i));
+                        h.addAction("Deal P0: " + card.getRank());
+                        h.addCard(0, card = cards.get(j));
+                        h.addAction("Deal P0: " + card.getRank());
+
+                        h.addCard(1, card = cards.get(k));
+                        h.addAction("Deal P1: " + card.getRank());
+                        h.addCard(1, card = cards.get(l));
+                        h.addAction("Deal P1: " + card.getRank());
+                        
+                        deals.add(h);
+                    }
+                }
+            }
+        }
+
+        return deals;
     }
 
     /**
@@ -126,8 +160,9 @@ public class TexasHoldemGameSim extends GameSim {
      */
     @Override
     public AbstractHistory randomDeal(AbstractHistory history) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'randomDeal'");
+        AbstractHistory copy = history.copy();
+        dealInitialCards(copy);
+        return copy;
     }
 
 
@@ -146,6 +181,10 @@ public class TexasHoldemGameSim extends GameSim {
      * @param suit the suit to generate cards for
      */
     private void loadSuit(char suit) {
+        loadSuit(suit, deck);
+    }
+
+    private void loadSuit(char suit, ArrayList<Card> deck) {
         for (int i = 2; i <= 14; i++) {
             deck.add(new Card(Integer.toString(i), suit));
         }
