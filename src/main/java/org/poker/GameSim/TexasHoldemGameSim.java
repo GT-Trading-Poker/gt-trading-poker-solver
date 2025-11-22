@@ -112,8 +112,9 @@ public class TexasHoldemGameSim extends GameSim {
     }
 
     /**
-     * TODO: javadocs
-     *
+     * generates histories containing all combinations of intial deals for 2 players
+     * @return an ArrayList of said histories
+     * TODO: once it is implemented, use TexasHoldemHistory instead of KuhnPokerHistory
      */
     @Override
     public ArrayList<AbstractHistory> generateAllDeals(AbstractHistory history) {
@@ -124,37 +125,71 @@ public class TexasHoldemGameSim extends GameSim {
         loadSuit('S', cards);
         loadSuit('D', cards);
 
-        for (int i = 0; i < cards.size(); i++) {
-            for (int j = 0; j < cards.size(); j++) {
-                for (int k = 0; k < cards.size(); k++) {
-                    for (int l = 0; l < cards.size(); l++) {
-                        if (i == j) continue;
-                        if (i == k) continue;
-                        if (i == l) continue;
-                        if (j == k) continue;
-                        if (j == l) continue;
-                        if (k == l) continue;
+        int N = cards.size();
 
-                        AbstractHistory h = new KuhnPokerHistory(); // TODO: change to proper history
-                        Card card;
+        for (int i = 0; i < N; i++) {
+            for (int j = i + 1; j < N; j++) {
+                for (int k = j + 1; k < N; k++) {
+                    for (int l = k + 1; l < N; l++) {
+                        Card c1 = cards.get(i);
+                        Card c2 = cards.get(j);
+                        Card c3 = cards.get(k);
+                        Card c4 = cards.get(l);
 
-                        h.addCard(0, card = cards.get(i));
-                        h.addAction("Deal P0: " + card.getRank());
-                        h.addCard(0, card = cards.get(j));
-                        h.addAction("Deal P0: " + card.getRank());
-
-                        h.addCard(1, card = cards.get(k));
-                        h.addAction("Deal P1: " + card.getRank());
-                        h.addCard(1, card = cards.get(l));
-                        h.addAction("Deal P1: " + card.getRank());
-                        
-                        deals.add(h);
+                        deals.addAll(allDealsHelper(c1, c2, c3, c4));
                     }
                 }
             }
         }
 
         return deals;
+    }
+
+    private ArrayList<AbstractHistory> allDealsHelper(Card c1, Card c2, Card c3, Card c4) {
+
+        // chagne to the correct history when it is implemented
+        AbstractHistory h1 = new KuhnPokerHistory();
+        AbstractHistory h2 = new KuhnPokerHistory();
+        AbstractHistory h3 = new KuhnPokerHistory();
+        AbstractHistory h4 = new KuhnPokerHistory();
+        AbstractHistory h5 = new KuhnPokerHistory();
+        AbstractHistory h6 = new KuhnPokerHistory();
+
+        ArrayList<AbstractHistory> deals = new ArrayList<>();
+        // h1
+        deal(0, c1, c2, h1);
+        deal(1, c3, c4, h1);
+        // h2
+        deal(0, c1, c3, h2);
+        deal(1, c2, c4, h2);
+        // h3
+        deal(0, c1, c4, h3);
+        deal(1, c2, c3, h3);
+        // h4
+        deal(0, c2, c3, h4);
+        deal(1, c1, c4, h4);
+        // h5
+        deal(0, c2, c4, h5);
+        deal(1, c1, c3, h5);
+        // h6
+        deal(0, c3, c4, h6);
+        deal(1, c1, c2, h6);
+
+        deals.add(h1);
+        deals.add(h2);
+        deals.add(h3);
+        deals.add(h4);
+        deals.add(h5);
+        deals.add(h6);
+
+        return deals;
+    }
+
+    private void deal(int player, Card c1, Card c2, AbstractHistory history) {
+        history.addCard(player, c1);
+        history.addAction(String.format("Deal P%d: %d", player, c1.getRank()));
+        history.addCard(player, c2);
+        history.addAction(String.format("Deal P%d: %d", player, c2.getRank()));
     }
 
     /**
