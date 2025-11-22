@@ -94,8 +94,12 @@ public class TexasHoldemGameSim extends GameSim {
      */
     @Override
     public double[] terminalUtility(AbstractHistory history) {
-       // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'terminalUtility'");
+        ArrayList<Double> utils = handEval.utilityFromHistory(history);
+        double[] result = new double[utils.size()];
+        for (int i = 0; i < utils.size(); i++) {
+            result[i] = utils.get(i);
+        }
+        return result;
     }
 
     /**
