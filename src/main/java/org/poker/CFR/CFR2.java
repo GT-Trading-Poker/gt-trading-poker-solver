@@ -38,6 +38,65 @@ public class CFR2 {
         return actions.get(actions.size() - 1);
     }
 
+    public double traverseMCCFR(AbstractHistory history, int targetPlayer, double piReach, double oppReach) {
+        if (game.isTerminal(history)) {
+            double[] util = game.terminalUtility(history);
+            return util[targetPlayer];
+        }
+
+        boolean isChance = false;
+        for (String action : history.getActions()) {
+            if (action.startsWith("Deal")) {
+                isChance = true;
+                break;
+            }
+        }
+
+        if (isChance) {
+            ArrayList<AbstractHistory> deals = game.generateAllDeals(history);
+            int sampledIndex = random.nextInt(deals.size());
+            AbstractHistory sampledDeal = deals.get(sampledIndex);
+            double probSample = 1.0 / deals.size();
+            return traverseMCCFR(sampledDeal, targetPlayer, piReach, oppReach) / probSample;
+        }
+
+        int currentPlayer = game.currentPlayer(history);
+        ArrayList<String> actions = game.getAvailableActions(history);
+        if (actions.isEmpty()) return 0.0;
+
+        InfoSet infoSet = getInfoSet(history, currentPlayer, actions);
+        Map<String, Double> strategy = infoSet.getStrategy();
+
+        if (currentPlayer == targetPlayer) {
+            String sampledAction = sampleAction(strategy, actions);
+            AbstractHistory next = history.copy();
+            next.addAction("P" + currentPlayer + ":" + sampledAction);
+
+            double childValue = traverseMCCFR(next, targetPlayer, piReach * strategy.get(sampledAction), oppReach);
+
+            double nodeValue = 0.0;
+            for (String a : actions) {
+                double cfv = (a.equals(sampledAction)) ? childValue : 0.0;
+                nodeValue += strategy.get(a) * cfv;
+            }
+
+            for (String a : actions) {
+                double regret = ((a.equals(sampledAction) ? childValue : 0.0) - nodeValue) * oppReach;
+                infoSet.addToRegretSum(a, regret);
+                infoSet.addToStrategySum(a, strategy.get(a) * piReach);
+            }
+
+            return nodeValue;
+
+        } else {
+            String sampledAction = sampleAction(strategy, actions);
+            AbstractHistory next = history.copy();
+            next.addAction("P" + currentPlayer + ":" + sampledAction);
+
+            return traverseMCCFR(next, targetPlayer, piReach, oppReach * strategy.get(sampledAction));
+        }
+    }
+
     public double traverse(AbstractHistory history, int targetPlayer) {
         if (game.isTerminal(history)) {
             double[] util = game.terminalUtility(history);
@@ -97,10 +156,17 @@ public class CFR2 {
         }
     }
 
+    // public void train(int iterations, AbstractHistory initialHistory) {
+    //     for (int i = 0; i < iterations; i++) {
+    //         int targetPlayer = i % numPlayers;
+    //         traverse(initialHistory.copy(), targetPlayer);
+    //     }
+    // }
+
     public void train(int iterations, AbstractHistory initialHistory) {
         for (int i = 0; i < iterations; i++) {
             int targetPlayer = i % numPlayers;
-            traverse(initialHistory.copy(), targetPlayer);
+            traverseMCCFR(initialHistory.copy(), targetPlayer, 1.0, 1.0);
         }
     }
 
