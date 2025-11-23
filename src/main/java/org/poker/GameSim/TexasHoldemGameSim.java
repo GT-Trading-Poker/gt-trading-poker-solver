@@ -216,6 +216,7 @@ public class TexasHoldemGameSim extends GameSim {
             Card c1 = deck.removeLast();
             // implement community cards in history
         }
+
         return copy;
     }
 
