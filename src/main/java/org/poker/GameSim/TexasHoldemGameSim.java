@@ -3,6 +3,8 @@ package org.poker.GameSim;
 import org.poker.Card;
 import org.poker.CFR.History.AbstractHistory;
 import org.poker.CFR.History.KuhnPokerHistory;
+import org.poker.HandEval.BitmaskHandEval;
+import org.poker.HandEval.HandEval;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +14,11 @@ public class TexasHoldemGameSim extends GameSim {
 
     private ArrayList<Card> deck;
     private Random rng = new Random();
+    private static HandEval handEval;
+
+    static {
+        handEval = new BitmaskHandEval();
+    }
 
     public TexasHoldemGameSim() {
         resetDeck();
