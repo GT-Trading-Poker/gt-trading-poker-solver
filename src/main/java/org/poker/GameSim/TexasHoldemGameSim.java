@@ -200,7 +200,22 @@ public class TexasHoldemGameSim extends GameSim {
     @Override
     public AbstractHistory randomDeal(AbstractHistory history) {
         AbstractHistory copy = history.copy();
-        dealInitialCards(copy);
+
+        // if pre-flop, issue 3 cards
+        String currentRound = ""; // can get this from history TODO: Implement
+        if (currentRound.equals("pre-flop")) {
+            Card c1 = deck.removeLast();
+            Card c2 = deck.removeLast();
+            Card c3 = deck.removeLast();
+            // implement community cards in history, deal them there
+            // change current round to flop
+        }
+
+        // if flop or turn, issue 1 card
+        if (currentRound.equals("flop") || currentRound.equals("turn")) {
+            Card c1 = deck.removeLast();
+            // implement community cards in history
+        }
         return copy;
     }
 
@@ -236,7 +251,6 @@ public class TexasHoldemGameSim extends GameSim {
     public void setSeed(long seed) {
         rng = new Random(seed);
     }
-
 
     /**
      * resets the Deck into its shuffled state.
